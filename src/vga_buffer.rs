@@ -1,4 +1,7 @@
+// use for wrap ScreenChar
 use volatile::Volatile;
+// impl for format macro
+use core::fmt;
 
 //public meterial
 #[allow(dead_code)]
@@ -64,16 +67,25 @@ impl Writer {
     fn new_line(&mut self) {}
 }
 
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+
 pub fn print_something() {
+    use core::fmt::Write;
     let mut writer = Writer {
         colomn_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        color_code: ColorCode::new(Color::Cyan, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     };
 
     writer.write_byte(b'H');
     writer.write_string("ello ");
     writer.write_string("World!");
+    write!(writer, "Number are {} and {}", 55, 1.0 / 3.0).unwrap();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
