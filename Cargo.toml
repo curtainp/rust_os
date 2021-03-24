@@ -17,3 +17,4 @@ build-command = ["xbuild"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 bootloader = "0.9.16"
+volatile = "0.2.6"
