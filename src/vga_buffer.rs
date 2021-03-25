@@ -2,6 +2,8 @@
 use volatile::Volatile;
 // impl for format macro
 use core::fmt;
+use lazy_static::lazy_static;
+use spin::Mutex;
 
 //public meterial
 #[allow(dead_code)]
@@ -64,7 +66,27 @@ impl Writer {
         }
     }
 
-    fn new_line(&mut self) {}
+    fn new_line(&mut self) {
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.chars[row][col].read();
+                self.buffer.chars[row - 1][col].write(character);
+            }
+        }
+        // last two line is repeat when go here. we clear last line
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.colomn_position = 0
+    }
+
+    fn clear_row(&mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
+    }
 }
 
 impl fmt::Write for Writer {
@@ -74,18 +96,12 @@ impl fmt::Write for Writer {
     }
 }
 
-pub fn print_something() {
-    use core::fmt::Write;
-    let mut writer = Writer {
+lazy_static! {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         colomn_position: 0,
-        color_code: ColorCode::new(Color::Cyan, Color::Black),
+        color_code: ColorCode::new(Color::LightGreen, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_string("ello ");
-    writer.write_string("World!");
-    write!(writer, "Number are {} and {}", 55, 1.0 / 3.0).unwrap();
+    });
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

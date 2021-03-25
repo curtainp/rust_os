@@ -15,6 +15,11 @@ fn panic(_info: &PanicInfo) -> ! {
 // disable name mangling
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    vga_buffer::print_something();
+    use core::fmt::Write;
+    vga_buffer::WRITER
+        .lock()
+        .write_str("Hello Rust OS!")
+        .unwrap();
+    write!(vga_buffer::WRITER.lock(), ", some number: {} {}", 44, 1.334).unwrap();
     loop {}
 }
