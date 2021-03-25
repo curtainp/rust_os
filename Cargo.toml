@@ -13,6 +13,7 @@ panic = "abort"
 # use xbuild when cargo bootimage
 [package.metadata.bootimage]
 build-command = ["xbuild"]
+test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x4"]
 
 # for static instance initialization when first use, but not compile time
 # [dependencies.lazy_static]
@@ -26,3 +27,5 @@ bootloader = "0.9.16"
 volatile = "0.2.6"
 spin = "0.4.9"
 lazy_static = { version = "1.4", features = ["spin_no_std"]}
+# provide abstract interface for port IO
+x86_64 = "0.13.3"
