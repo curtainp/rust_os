@@ -9,11 +9,12 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+mod serial;
 mod vga_buffer;
 
 #[cfg(test)]
 fn test_runner(tests: &[&dyn Fn()]) {
-    println!("running {} test case", tests.len());
+    serial_println!("running {} test case", tests.len());
     for test in tests {
         test();
     }
@@ -22,9 +23,9 @@ fn test_runner(tests: &[&dyn Fn()]) {
 
 #[test_case]
 fn trivial_assertion() {
-    print!("trivial_assertion...");
+    serial_print!("trivial_assertion...");
     assert_eq!(1, 1);
-    println!("[ok]");
+    serial_println!("[ok]");
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
