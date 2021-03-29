@@ -49,6 +49,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    // the same as main, cause it indenpdent.
+    init();
     test_main();
     loop {}
 }
