@@ -30,6 +30,12 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     println!("Hello Rust OS{}", "!");
 
+    // init must before test case runtime
+    blog_os::init();
+
+    // invoke a breakpoint exception
+    x86_64::instructions::interrupts::int3();
+
     //condition compile, this lines will only compile when cargo test
     #[cfg(test)]
     test_main();
