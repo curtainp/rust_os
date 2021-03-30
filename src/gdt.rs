@@ -8,6 +8,10 @@ pub const DOUBLE_FAULT_IST_INDEX: u16 = 0;
 pub const PAGE_SIZE: usize = 4096;
 pub const PAGE_CNT: usize = 5;
 
+pub fn init() {
+    GDT.load();
+}
+
 // create a custom TSS
 lazy_static! {
     static ref TSS: TaskStateSegment = {
