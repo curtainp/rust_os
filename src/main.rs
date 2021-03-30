@@ -33,8 +33,10 @@ pub extern "C" fn _start() -> ! {
     // init must before test case runtime
     blog_os::init();
 
-    // invoke a breakpoint exception
-    x86_64::instructions::interrupts::int3();
+    //trigger a page fault
+    unsafe {
+        *(0xdeadbeef as *mut u64) = 41;
+    }
 
     //condition compile, this lines will only compile when cargo test
     #[cfg(test)]
