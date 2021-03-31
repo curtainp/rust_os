@@ -39,3 +39,5 @@ lazy_static = { version = "1.4", features = ["spin_no_std"]}
 x86_64 = "0.13.3"
 # for serial support
 uart_16550 = "0.2.12"
+# for 8259 PIC opr
+pic8259_simple = "0.2.0"

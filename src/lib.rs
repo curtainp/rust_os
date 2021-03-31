@@ -17,6 +17,7 @@ pub fn init() {
     gdt::init();
     //interrupt mod init
     interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
