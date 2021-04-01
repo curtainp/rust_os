@@ -33,11 +33,6 @@ pub extern "C" fn _start() -> ! {
     // init must before test case runtime
     blog_os::init();
 
-    //trigger a page fault
-    unsafe {
-        *(0xdeadbeef as *mut u64) = 41;
-    }
-
     //condition compile, this lines will only compile when cargo test
     #[cfg(test)]
     test_main();
