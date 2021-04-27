@@ -33,6 +33,12 @@ pub extern "C" fn _start() -> ! {
     // init must before test case runtime
     blog_os::init();
 
+    // for page fault exception
+    let ptr = 0xdeadbeaf as *mut u32;
+    unsafe {
+        *ptr = 32;
+    }
+
     //condition compile, this lines will only compile when cargo test
     #[cfg(test)]
     test_main();
