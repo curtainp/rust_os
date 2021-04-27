@@ -33,12 +33,9 @@ pub extern "C" fn _start() -> ! {
     // init must before test case runtime
     blog_os::init();
 
-    // for page fault exception
-    let ptr = 0xdeadbeaf as *mut u32;
-    unsafe {
-        *ptr = 32;
-    }
-
+    use x86_64::registers::control::Cr3;
+    let (level_4_table, _) = Cr3::read();
+    println!("level_4_table phyaddr: {:?}", level_4_table.start_address());
     //condition compile, this lines will only compile when cargo test
     #[cfg(test)]
     test_main();
