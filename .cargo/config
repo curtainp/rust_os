@@ -1,0 +1,4 @@
+# build riscv64imac-unknwn-none-elf target
+# use rustup add riscv64imac-unknown-none-elf install risc-v bare target
+[build]
+target = "riscv64imac-unknown-none-elf"
