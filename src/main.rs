@@ -11,9 +11,10 @@ struct Stdout;
 mod lang_items;
 mod sbi;
 
-const SYSCALL_EXIT: usize = 93;
-const SYSCALL_WRITE: usize = 64;
+// const SYSCALL_EXIT: usize = 93;
+// const SYSCALL_WRITE: usize = 64;
 const SBI_SHUTDOWN: usize = 8;
+const SBI_CONSOLE_PUTCHAR: usize = 1;
 
 fn syscall(id: usize, args: [usize; 3]) -> isize {
     let mut ret: isize;
@@ -27,12 +28,18 @@ fn syscall(id: usize, args: [usize; 3]) -> isize {
     }
     ret
 }
-pub fn sys_exit(estate: i32) -> isize {
-    syscall(SYSCALL_EXIT, [estate as usize, 0, 0])
+
+
+pub fn console_putchar(c: usize) {
+    syscall(SBI_CONSOLE_PUTCHAR, [c, 0, 0]);
 }
-pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
-    syscall(SYSCALL_WRITE, [fd, buffer.as_ptr() as usize, buffer.len()])
-}
+
+// pub fn sys_exit(estate: i32) -> isize {
+//     syscall(SYSCALL_EXIT, [estate as usize, 0, 0])
+// }
+// pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
+//     syscall(SYSCALL_WRITE, [fd, buffer.as_ptr() as usize, buffer.len()])
+// }
 pub fn shutdown() -> ! {
     sbi_call(SBI_SHUTDOWN, 0, 0, 0);
     panic!("It should shutdown!");
@@ -40,7 +47,10 @@ pub fn shutdown() -> ! {
 
 impl Write for Stdout {
     fn write_str(&mut self, s: &str) -> fmt::Result {
-        sys_write(1, s.as_bytes());
+        //sys_write(1, s.as_bytes());
+        for c in s.chars() {
+            console_putchar(c as usize);
+        }
         Ok(())
     }
 }
@@ -63,6 +73,18 @@ macro_rules! println {
     }
 }
 
+fn clear_bss() {
+    extern "C" {
+        fn sbss();
+        fn ebss();
+    }
+    (sbss as usize..ebss as usize).for_each(|a|{
+        unsafe {
+            (a as *mut u8).write_volatile(0)
+        }
+    })
+}
+
 // #[no_mangle]
 // pub extern "C" fn _start() {
 //     println!("hello world");
@@ -73,5 +95,6 @@ macro_rules! println {
 global_asm!(include_str!("entry.asm"));
 #[no_mangle]
 pub fn rust_main() -> ! {
+    println!("hello world");
     shutdown();
 }

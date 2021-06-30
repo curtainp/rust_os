@@ -43,6 +43,7 @@ SECTIONS
     }
 
     . = ALIGN(4K);
+    ebss = .;
     kernel_end = .;
 
     /DISCARD/ : {
