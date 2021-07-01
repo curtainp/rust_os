@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 const SYSCALL_EXIT: usize = 93;
 const SYSCALL_WRITE: usize = 64;
 

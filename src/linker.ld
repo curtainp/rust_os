@@ -11,31 +11,33 @@ SECTIONS
 
     skernel = .;
 
-    /* .text */
-    text_start = .;
+
+    stext = .;
     .text : {
         /* entry函数放在text节开头 */
         *(.text.entry)
         *(.text .text.*)
     }
 
+
     . = ALIGN(4K);
-    /* .rodata */
-    rodata_start = .;
+    .etext = .;
+
+    srodata = .;
     .rodata : {
         *(.rodata .rodata.*)
     }
 
     . = ALIGN(4K);
-    /* .data */
-    .data_start = .;
+    .erodata = .;
+    .sdata = .;
     .data : {
         *(.data .data.*)
     }
 
     . = ALIGN(4K);
-    /* .bss */
-    .bss_start = .;
+    .edata = .;
+    .sbss_with_stack = .;
     .bss : {
         *(.bss.stack)
         sbss = .;
