@@ -4,11 +4,12 @@
 #![no_main]
 #![feature(llvm_asm)]
 #![feature(global_asm)]
+#![feature(panic_info_message)]
 use core::fmt::{self, Write};
 use crate::sbi::sbi_call;
+use core::panic::PanicInfo;
 struct Stdout;
 
-mod lang_items;
 mod sbi;
 
 // const SYSCALL_EXIT: usize = 93;
@@ -33,15 +34,9 @@ pub fn console_putchar(c: usize) {
     syscall(SBI_CONSOLE_PUTCHAR, [c, 0, 0]);
 }
 
-// pub fn sys_exit(estate: i32) -> isize {
-//     syscall(SYSCALL_EXIT, [estate as usize, 0, 0])
-// }
-// pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
-//     syscall(SYSCALL_WRITE, [fd, buffer.as_ptr() as usize, buffer.len()])
-// }
 pub fn shutdown() -> ! {
     sbi_call(SBI_SHUTDOWN, 0, 0, 0);
-    panic!("It should shutdown!");
+    panic!("it should shutdown!");
 }
 
 impl Write for Stdout {
@@ -84,16 +79,20 @@ fn clear_bss() {
     })
 }
 
-// #[no_mangle]
-// pub extern "C" fn _start() {
-//     println!("hello world");
-//     shutdown();
-//     //sys_exit(9);
-// }
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    if let Some(location) = info.location() {
+        println!("panic at {}:{} {}", location.file(), location.line(), info.message().unwrap());
+    } else {
+        println!("panic: {}", info.message().unwrap());
+    }
+    shutdown();
+}
 
 global_asm!(include_str!("entry.asm"));
 #[no_mangle]
 pub fn rust_main() -> ! {
     println!("hello world");
-    shutdown();
+    panic!("it should shutdown!");
+    //shutdown();
 }
